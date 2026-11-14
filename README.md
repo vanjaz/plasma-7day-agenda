@@ -2,6 +2,8 @@
 
 A KDE Plasma 6 panel widget in the spirit of [Itsycal](https://www.mowglii.com/itsycal/) for macOS.
 
+![The widget's popup: a month grid above a list of upcoming events with Join buttons](screenshot.png)
+
 In the panel it shows the time with the date under it, like the Digital Clock. Clicking it opens a popup with:
 
 - a month grid, with dots on days that have events;
