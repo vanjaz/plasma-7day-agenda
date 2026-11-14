@@ -1,0 +1,13 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Id": "local.agenda7",
+        "Name": "7-Day Agenda",
+        "Description": "Lists calendar events for today and the next 7 days, from the same sources as the clock's calendar.",
+        "Icon": "view-calendar-upcoming-events",
+        "Category": "Date and Time",
+        "Version": "1.0",
+        "License": "MIT"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
