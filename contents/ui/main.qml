@@ -26,6 +26,9 @@ PlasmoidItem {
     property var rows: []              // flat list: day headers and events
     property int eventCount: 0
     property var meetingLinks: ({})    // event title -> video meeting URL
+    // First day of the week (QML numbering: 0 = Sunday ... 6 = Saturday).
+    // Taken from KOrganizer's "Weekly start day" setting, else the locale.
+    property int firstDay: Qt.locale().firstDayOfWeek
 
     toolTipMainText: Qt.formatDate(today, "dddd, d MMMM yyyy")
     toolTipSubText: i18n("Click for the next %1 days", daysAhead)
@@ -41,7 +44,7 @@ PlasmoidItem {
         id: calThis
         days: 7
         weeks: 6
-        firstDayOfWeek: Qt.locale().firstDayOfWeek
+        firstDayOfWeek: root.firstDay
         today: root.today
         Component.onCompleted: daysModel.setPluginsManager(pluginsManager)
     }
@@ -49,7 +52,7 @@ PlasmoidItem {
         id: calNext
         days: 7
         weeks: 6
-        firstDayOfWeek: Qt.locale().firstDayOfWeek
+        firstDayOfWeek: root.firstDay
         today: root.today
         Component.onCompleted: daysModel.setPluginsManager(pluginsManager)
     }
@@ -93,6 +96,24 @@ PlasmoidItem {
         }
     }
 
+    // Reads KOrganizer's week start. KOrganizer stores it as 0 = Monday ...
+    // 6 = Sunday; an empty result means it is unset, so the locale applies.
+    P5Support.DataSource {
+        id: weekStartReader
+        engine: "executable"
+        readonly property string command: "kreadconfig6 --file korganizerrc --group 'Time & Date' --key WeekStartDay"
+        function refresh() {
+            if (connectedSources.length === 0) {
+                connectSource(command);
+            }
+        }
+        onNewData: (source, data) => {
+            disconnectSource(source);
+            const value = parseInt((data["stdout"] || "").trim(), 10);
+            root.firstDay = (value >= 0 && value <= 6) ? (value + 1) % 7 : Qt.locale().firstDayOfWeek;
+        }
+    }
+
     // Many updates arrive in bursts while calendars load; rebuild once after.
     Timer {
         id: rebuildTimer
@@ -130,11 +151,13 @@ PlasmoidItem {
             root.startDate = root.today;   // always open on today
             rebuild();
             linkHelper.refresh();
+            weekStartReader.refresh();
         }
     }
     Component.onCompleted: {
         pointBackends();
         linkHelper.refresh();
+        weekStartReader.refresh();
     }
 
     function dayLabel(date) {
@@ -273,7 +296,7 @@ PlasmoidItem {
 
                 today: root.today
                 currentDate: root.today
-                firstDayOfWeek: Qt.locale().firstDayOfWeek
+                firstDayOfWeek: root.firstDay
                 eventPluginsManager: pluginsManager
                 borderOpacity: 0
 

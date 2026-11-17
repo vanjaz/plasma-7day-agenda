@@ -50,6 +50,8 @@ systemctl --user restart plasma-plasmashell.service
 
 There is no settings page. The number of days listed is the `daysAhead` value near the top of `contents/ui/main.qml`.
 
+The month grid starts the week on the day set in KOrganizer under **Settings → Configure KOrganizer → General → Time & Date → Weekly start day**. If that is not set, it follows the system locale. The setting is re-read each time the popup opens.
+
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
